@@ -1,0 +1,336 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * Rules for Patients
+ */
+
+rule PatientCanSeeHisDetails {
+  description: "Patient can see his details"
+  participant(p): "org.electronic.healthcare.Patient"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Patient"
+  condition: (p.getIdentifier() === r.getIdentifier())
+  action: ALLOW
+}
+
+rule PatientCanSeeHisOutstandingBalance {
+  description: "Patient can see his Outstanding Balance"
+  participant(p): "org.electronic.healthcare.Patient"
+  operation: READ
+  resource(r): "org.electronic.healthcare.OutstandingBalance"
+  condition: (p.getIdentifier() === r.patient.getIdentifier())
+  action: ALLOW
+}
+
+rule PatientCanUpdateTheirRequestedHospital {
+  description: "Patient can Update their Requested Hospital"
+  participant: "org.electronic.healthcare.Patient"
+  operation: UPDATE
+  resource: "org.electronic.healthcare.Patient"
+  action: ALLOW
+}
+
+rule PatientCanRequestForHospitalChange {
+  description: "Patient can Request Hospital"
+  participant(p): "org.electronic.healthcare.Patient"
+  operation: CREATE
+  resource(r): "org.electronic.healthcare.PatientRequestsHospital"
+  condition: (p.getIdentifier() === r.patient.getIdentifier())
+  action: ALLOW
+}
+
+rule PatientCanSeeTheirCurrentHospitalDetails {
+  description: "Patient can see their Current Hospital's Details"
+  participant(p): "org.electronic.healthcare.Patient"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Hospital"
+  condition: (p.currentHospital.getIdentifier() === r.getIdentifier())
+  action: ALLOW
+}
+
+rule PatientCanSeeTheirCurrentDoctorDetails {
+  description: "Patient can see their Current Doctor's Details"
+  participant(p): "org.electronic.healthcare.Patient"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Doctor"
+  condition: (p.currentDoctor.getIdentifier() === r.getIdentifier())
+  action: ALLOW
+}
+
+rule PatientCanSeeHisReports {
+  description: "Patient Can See his reports"
+  participant(p): "org.electronic.healthcare.Patient"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Report"
+  condition: (p.getIdentifier() === r.patient.getIdentifier())
+  action: ALLOW
+}
+
+
+
+/*
+ * Rules for Doctors
+ */
+
+rule DoctorCanSeeHisDetails {
+  description: "Doctor can see his details"
+  participant(p): "org.electronic.healthcare.Doctor"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Doctor"
+  condition: (p.getIdentifier() === r.getIdentifier())
+  action: ALLOW
+}
+
+rule DoctorsCanAddNewReportToPatient {
+  description: "Doctors can add new reports to patient"
+  participant(p): "org.electronic.healthcare.Doctor"
+  operation: CREATE
+  resource(r): "org.electronic.healthcare.Report"
+  condition: (p.getIdentifier() === r.patient.currentDoctor.getIdentifier())
+  action: ALLOW
+}
+
+rule DoctorsCanSeeTheirPatientsReports {
+  description: "Doctors can add new reports to patient"
+  participant(p): "org.electronic.healthcare.Doctor"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Report"
+  condition: (p.getIdentifier() === r.patient.currentDoctor.getIdentifier())
+  action: ALLOW
+}
+
+rule DoctorCanSeeTheirCurrentHospitalDetails {
+  description: "Doctor can see their Current Hospital's Details"
+  participant(p): "org.electronic.healthcare.Doctor"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Hospital"
+  condition: (p.currentHospital.getIdentifier() === r.getIdentifier())
+  action: ALLOW
+}
+
+rule DoctorsCanAddNewReports{
+  description: "Doctor can add new reports to their patients"
+  participant(p): "org.electronic.healthcare.Doctor"
+  operation: CREATE
+  resource(r): "org.electronic.healthcare.AddNewReport"
+  condition: (p.getIdentifier() === r.patient.currentDoctor.getIdentifier())
+  action: ALLOW
+}
+
+rule DoctorsCanCreateNewReport {
+  description: "Doctor can create new reports to their patients"
+  participant(p): "org.electronic.healthcare.Doctor"
+  operation: CREATE
+  resource(r): "org.electronic.healthcare.Report"
+  condition: (p.getIdentifier() === r.patient.currentDoctor.getIdentifier())
+  action: ALLOW
+}
+
+rule DoctorCanRequestForHospitalChange {
+  description: "Doctor can Request Hospital"
+  participant(p): "org.electronic.healthcare.Doctor"
+  operation: CREATE
+  resource(r): "org.electronic.healthcare.DoctorRequestsHospital"
+  condition: (p.getIdentifier() === r.doctor.getIdentifier())
+  action: ALLOW
+}
+
+rule DoctorsCanSeeHisPatientsDetails {
+  description: "Doctor can See his patient's details"
+  participant(p): "org.electronic.healthcare.Doctor"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Patient"
+  condition: (p.getIdentifier() === r.currentDoctor.getIdentifier())
+  action: ALLOW
+}
+
+rule DoctorsCanSeeTheirOutstandingBalance {
+  description: "Doctor can See his patient's Outstanding Balance"
+  participant(p): "org.electronic.healthcare.Doctor"
+  operation: READ
+  resource(r): "org.electronic.healthcare.OutstandingBalance"
+  condition: (p.getIdentifier() === r.patient.currentDoctor.getIdentifier())
+  action: ALLOW
+}
+
+rule DoctorsCanUpdateTheirOutstandingBalance {
+  description: "Doctor can Update his patient's Outstanding Balance"
+  participant(p): "org.electronic.healthcare.Doctor"
+  operation: UPDATE
+  resource(r): "org.electronic.healthcare.OutstandingBalance"
+  condition: (p.getIdentifier() === r.patient.currentDoctor.getIdentifier())
+  action: ALLOW
+}
+
+/*
+  Rules For Hospital
+  */
+
+rule HospitalCanSeeHisDetails {
+  description: "Hospital can see his details"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Hospital"
+  condition: (p.getIdentifier() === r.getIdentifier())
+  action: ALLOW
+}
+
+rule HospitalCanSeeTheirDoctors {
+  description: "Hospital can see their current Doctors"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Doctor"
+  condition: (p.getIdentifier() === r.currentHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule HospitalCanUpdateTheirDoctors {
+  description: "Hospital can update their current Doctors"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: UPDATE
+  resource(r): "org.electronic.healthcare.Doctor"
+  condition: (p.getIdentifier() === r.currentHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule HospitalCanCreateNewDotors {
+  description: "Hospitals can create New Hospitals"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: CREATE
+  resource(r): "org.electronic.healthcare.Doctor"
+  condition:(p.getIdentifier() === r.currentHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule HospitalCanAddNewDotors {
+  description: "Hospitals can Add New Hospitals"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: CREATE
+  resource(r): "org.electronic.healthcare.AddNewDoctor"
+  condition:(p.getIdentifier() === r.currentHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule HospitalCanSeeTheirPatients {
+  description: "Hospital can see their current Doctors"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Patient"
+  condition: (p.getIdentifier() === r.currentHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule RequestedHospitalsCanReadDetailsOfPatients 
+{
+  description: "Hospital can see their current Patient"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: READ
+  resource(r): "org.electronic.healthcare.Patient"
+  condition: (p.getIdentifier() === r.requestedHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule CurrentHospitalsCanUpdateDetailsOfPatients 
+{
+  description: "Hospital can see their current Patient"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: UPDATE
+  resource(r): "org.electronic.healthcare.Patient"
+  condition: (p.getIdentifier() === r.currentHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule RequestedHospitalsCanUpdateDetailsOfPatients
+{
+  description: "Requested Hospital can update their current Patient"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: UPDATE
+  resource(r): "org.electronic.healthcare.Patient"
+  condition: (p.getIdentifier() === r.requestedHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule RequestedHospitalsCanUpdateDetailsOfDoctors 
+{
+  description: "Hospital can see their current Doctors"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: UPDATE
+  resource(r): "org.electronic.healthcare.Doctor"
+  condition: (p.getIdentifier() === r.requestedHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule HospitalCanCreateNewDotorsUsingTransaction{
+  description: "Hospitals can create New Hospitals"
+  participant: "org.electronic.healthcare.Hospital"
+  operation: CREATE
+  resource: "org.electronic.healthcare.AddNewDoctor"
+  action: ALLOW
+}
+
+rule HospitalCanChangeHospitalForPatient {
+  description: "Hospital can change the hospital for patient"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: CREATE
+  resource(r): "org.electronic.healthcare.ChangeHospitalForPatient"
+  condition: (p.getIdentifier() === r.patient.requestedHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule HospitalCanChangeHospitalForDoctor {
+  description: "Hospital can change the hospital for Doctor"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: CREATE
+  resource(r): "org.electronic.healthcare.ChangeHospitalForDoctor"
+  condition: (p.getIdentifier() === r.doctor.requestedHospital.getIdentifier())
+  action: ALLOW
+}
+
+rule HospitalCanChangeDoctorForPatient{
+  description: "Hospital can change the hospital for Doctor"
+  participant(p): "org.electronic.healthcare.Hospital"
+  operation: CREATE
+  resource(r): "org.electronic.healthcare.ChangeDoctorForPatient"
+  condition: (p.getIdentifier() === r.patient.currentHospital.getIdentifier() && p.getIdentifier()=== r.toDoctor.currentHospital.getIdentifier())
+  action: ALLOW
+}
+
+/*
+  Rules for Network administrators
+  */
+
+rule SystemACL {
+    description:  "System ACL to permit all access"
+    participant: "org.hyperledger.composer.system.Participant"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}

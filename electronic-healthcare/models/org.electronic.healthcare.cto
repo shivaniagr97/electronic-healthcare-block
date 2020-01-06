@@ -1,0 +1,129 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Write your model definitions here
+ */
+
+namespace org.electronic.healthcare
+
+abstract concept Address {
+  o String street
+  o String city default ="Delhi"
+  o String country default = "India"
+}
+
+concept IndiaAddress extends Address {
+  o String pincode
+}
+
+participant Patient identified by emailId {
+  o String emailId
+  o String name
+  o IndiaAddress address
+  o String bloodGroup
+  o String contactNumber
+  o String hasRequestedToChangeHospital default = 'FALSE'
+  --> Doctor currentDoctor optional
+  --> Hospital currentHospital optional
+  --> Hospital requestedHospital optional
+}
+
+participant Doctor identified by emailId {
+  o String emailId
+  o String name
+  o IndiaAddress address
+  o String qualifications
+  o String contactNumber
+  o Integer consultancyFee
+  o String hasRequestedToChangeHospital default = 'FALSE'
+  --> Hospital currentHospital
+  --> Hospital requestedHospital optional
+}
+
+participant Hospital identified by hospitalId {
+  o String hospitalId
+  o String hospitalName
+  o String contactNumber
+  o IndiaAddress address
+}
+
+asset Report identified by reportId {
+  o String reportId
+  --> Patient patient
+  --> Doctor doctor
+  o String description
+  o String date
+}
+
+asset OutstandingBalance identified by id {
+  o String id
+  --> Patient patient
+  o Integer outstandingBalance default = 0
+}
+
+transaction AddNewReport {
+  --> Patient patient
+  o String description
+  o String date
+  --> OutstandingBalance outstandingBalance
+}
+
+transaction AddNewPatient {
+  o String emailId
+  o String name
+  o IndiaAddress address
+  o String bloodGroup
+  o String contactNumber
+}
+
+transaction AddNewHospital {
+  o String hospitalId
+  o String hospitalName
+  o String contactNumber
+  o IndiaAddress address
+}
+
+transaction AddNewDoctor {
+  o String emailId
+  o String name
+  o IndiaAddress address
+  o String qualifications
+  o String contactNumber
+  o Integer consultancyFee
+  --> Hospital currentHospital
+}
+
+transaction PatientRequestsHospital{
+  --> Patient patient
+  --> Hospital toHospital
+}
+
+transaction DoctorRequestsHospital {
+  --> Doctor doctor
+  --> Hospital toHospital
+}
+
+transaction ChangeHospitalForPatient {
+  --> Patient patient
+}
+
+transaction ChangeHospitalForDoctor {
+  --> Doctor doctor
+}
+
+transaction ChangeDoctorForPatient {
+  --> Patient patient
+  --> Doctor toDoctor
+}
